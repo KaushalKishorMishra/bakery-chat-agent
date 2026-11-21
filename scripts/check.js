@@ -36,7 +36,7 @@ for (const c of cases) {
     cost += r.cost || 0;
     const kindKnown = r.kind !== undefined;
     if (c.kind && !kindKnown) noKind = true;
-    const said = (r.reply || "").toLowerCase();
+    const said = (r.reply || r.draft || "").toLowerCase(); // held drafts are visible only in TEST_MODE
     const bad = (c.not_in_reply || []).filter((w) => said.includes(w));
     const ok = r.status === c.status && (!c.kind || !kindKnown || r.kind === c.kind) && !bad.length;
     runs.push({ ok, got: (r.kind && c.kind ? `${r.status}/${r.kind}` : r.status) + (bad.length ? ` (said: ${bad.join(",")})` : "") });

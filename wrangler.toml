@@ -5,7 +5,8 @@ compatibility_date = "2025-01-01"
 [vars]
 MODEL_PROVIDER = "openrouter"   # "gemini", "anthropic" or "openrouter"
 MODEL = "google/gemma-4-31b-it:free,inclusionai/ling-3.2-flash:free,baidu/ernie-5.5-flash-preview:free,recursive/flint-v1.0:free"  # tried in order; if one fails the next is used
-REQUIRE_APPROVAL = "off"  # "on" = every reply waits in /inbox for a person to press Approve; "off" = replies go straight to the user
+
+DAILY_LIMIT = "50"  # new requests allowed per day (UTC); after that users are told to try again tomorrow
 
 # Price per million tokens, in USD. 0 on a free tier. Paid price of google/gemma-4-31b-it on OpenRouter: in 0.20, out 0.40 (checked 2026-11-21; look it up again before relying on it).
 PRICE_IN = "0"

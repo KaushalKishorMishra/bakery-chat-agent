@@ -14,7 +14,8 @@ button{font:inherit;padding:6px 14px;border-radius:16px;border:1px solid #8886;b
 <h1>Inbox</h1><div id="list">Loading…</div>
 <script>
 const list=document.getElementById('list');
-const post=(p,b)=>fetch(p,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b||{})});
+const KEY=new URLSearchParams(location.search).get('key')||'';const H={'content-type':'application/json','x-inbox-key':KEY};
+const post=(p,b)=>fetch(p,{method:'POST',headers:H,body:JSON.stringify(b||{})});
 function card(it){
   const d=document.createElement('div');d.className='item';
   const meta=document.createElement('div');meta.className='meta';meta.textContent=it.created+' · '+it.kind+' · '+((it.usage&&(it.usage.input+it.usage.output))||0)+' tokens · $'+(it.cost||0).toFixed(6);
@@ -28,7 +29,7 @@ function card(it){
   d.append(meta,q,draft,ta,mk('Approve','ok',()=>act('approve')),edit,save,mk('Cancel','',()=>act('cancel')));
   return d}
 async function load(){
-  const r=await fetch('/inbox/items');const {items}=await r.json();
+  const r=await fetch('/inbox/items',{headers:H});const {items}=await r.json();
   list.replaceChildren(...(items.length?items.map(card):['Nothing awaiting approval.']))}
 load();setInterval(()=>{if(!document.querySelector('textarea:not([hidden])'))load()},5000);
 </script></body></html>

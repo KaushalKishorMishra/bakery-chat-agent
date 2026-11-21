@@ -1,2 +1,4 @@
 MODEL_API_KEY=your-key-here
+INBOX_KEY=any-long-random-text
 TEST_MODE=on
+DAILY_LIMIT=1000

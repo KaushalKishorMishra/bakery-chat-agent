@@ -16,15 +16,17 @@ Every message gets one classification (`kind`), and the code turns it into a sta
 
 | kind | meaning | status |
 |---|---|---|
-| `answer` | can answer from the menu | `handed_over` (reply delivered) |
-| `ask` | too unclear, needs one clarifying question | `asked_question` |
-| `handover` | needs a person: orders, discounts, price changes, complaints, refunds, anything off-topic | `handed_over` |
+| `answer` | can answer from the menu | `handed_over` (reply delivered at once) |
+| `ask` | too unclear, needs one clarifying question | `asked_question` (sent at once) |
+| `order` | the customer wants to place an order | `awaiting_approval`: **held in `/inbox` until a person presses Approve** |
+| `handover` | needs a person, not an order: discounts, price changes, complaints, refunds, anything off-topic | `handed_over` (a polite "ask a team member in the shop", sent at once) |
 | (model fails or answer unreadable) | | `failed` + polite holding message |
 
-With `REQUIRE_APPROVAL = "on"`, every draft instead waits in `/inbox` as `awaiting_approval` until a person presses Approve, Edit or Cancel.
+**Approval applies only to placing an order.** Every other question is answered straight away. The code (not the prompt) holds an `order` draft: the customer sees "waiting for our team to confirm" until a person presses Approve, Edit or Cancel in `/inbox`.
 
 ## Must never do alone
-- Take orders, give discounts or change prices.
+- Confirm an order, give a total or promise a pickup time (a person does that, via Approve).
+- Give discounts or change prices.
 - Invent items, prices, ingredients or allergens that are not in `menu.md`.
 - Tell customers to call, email or go online (the bakery has no phone, email or website in its info).
 

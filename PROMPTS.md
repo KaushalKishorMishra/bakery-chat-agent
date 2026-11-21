@@ -93,9 +93,9 @@ Change two settings in `wrangler.toml` (`MODEL_PROVIDER`, `MODEL`), then `npx wr
 | Prompt | Status | Notes |
 |---|---|---|
 | A | Done | Facts are in `data/menu.md` (markdown) instead of `data/facts.json`. Providers: Gemini, Anthropic, OpenRouter (the last replaces the starter's default; free models). `MODEL` may be a comma-separated list, tried in order. |
-| B | Built, then switched off | Approval is controlled by `REQUIRE_APPROVAL` (`"off"` by default: replies go straight to the user; `"on"` holds them in `/inbox`). |
-| C | Done | 5 cases in `checks.json`; `npm run check` (use `CHECK_ONLY="text"` to run one case). |
-| D | **Not done yet** | No `INBOX_KEY`, PII filter or daily limit. Do this before publishing. |
-| E | Done | Tokens and cost saved per item; `GET /inbox/costs`; `PRICE_IN`/`PRICE_OUT` (0 on free tier). `/inbox/costs` is open until D adds the key. |
+| B | Done, narrowed | Only **order** requests wait in `/inbox` for Approve, Edit or Cancel; all other questions are answered straight away (enforced in code). |
+| C | Done | 5 cases in `checks.json` (order case added); `npm run check` (use `CHECK_ONLY="text"` to run one case). |
+| D | Done | `/inbox*` needs `INBOX_KEY` (empty 401 otherwise); phones/emails become `[phone]`/`[email]` before the model and storage; `DAILY_LIMIT` (50); messages over 2,000 characters are rejected; secret search clean. Capabilities list is in README.md. |
+| E | Done | Tokens and cost saved per item; `GET /inbox/costs`; `PRICE_IN`/`PRICE_OUT` (0 on free tier). `/inbox/costs` is behind `INBOX_KEY`. |
 | F | **Not done yet** | Not published. |
-| G | Done | "Order for pickup" reply mentioned calling the shop (no phone exists). Fixed in the system prompt; added as a check case. |
+| G | Done | "Order for pickup" reply mentioned calling the shop (no phone exists). Fixed in the system prompt; became the `order` check case (held for approval, and the draft must not say call/phone/email/website/confirmed). |

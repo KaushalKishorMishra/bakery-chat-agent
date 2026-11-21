@@ -26,15 +26,16 @@
     "kind": "handover"
   },
   {
-    "name": "new case (G): order for pickup must not mention calling",
+    "name": "order: placing an order is held for approval (G)",
     "message": "I want to order 3 baguettes for pickup at 5pm",
-    "status": "handed_over",
-    "kind": "handover",
+    "status": "awaiting_approval",
+    "kind": "order",
     "not_in_reply": [
       "call",
       "phone",
       "email",
-      "website"
+      "website",
+      "confirmed"
     ]
   }
 ]
