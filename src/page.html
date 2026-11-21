@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bakery chat</title>
+<style>
+:root{color-scheme:light dark;--bg:#fff;--fg:#1f1f1f;--me:#fde8d0;--bot:#f4f1ee;--line:#dadce0}
+@media(prefers-color-scheme:dark){:root{--bg:#161412;--fg:#ece6df;--me:#5a3a1c;--bot:#221f1c;--line:#3c3733}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,sans-serif;display:flex;flex-direction:column;height:100dvh}
+header{padding:12px 16px;border-bottom:1px solid var(--line);font-weight:600}
+#log{flex:1;overflow:auto;padding:16px;max-width:760px;width:100%;margin:0 auto}
+.m{padding:10px 14px;border-radius:16px;margin:8px 0;max-width:85%;white-space:pre-wrap;word-wrap:break-word}
+.user{background:var(--me);margin-left:auto}.assistant{background:var(--bot)}
+form{display:flex;gap:8px;padding:12px 16px;border-top:1px solid var(--line);max-width:760px;width:100%;margin:0 auto}
+textarea{flex:1;resize:none;padding:10px 12px;border-radius:20px;border:1px solid var(--line);background:var(--bg);color:var(--fg);font:inherit;max-height:140px}
+button{border:0;border-radius:20px;padding:0 18px;background:#b5651d;color:#fff;font:inherit;cursor:pointer}button:disabled{opacity:.5}
+</style></head><body>
+<header>🥐 Misbah &amp; Mariam Bakery</header>
+<div id="log"><div class="m assistant">Hi! Ask me about our breads, pastries, ingredients or allergens.</div></div>
+<form id="f"><textarea id="t" rows="1" maxlength="2000" placeholder="e.g. What's in the croissant?" autofocus></textarea><button id="b">Send</button></form>
+<script>
+const log=document.getElementById('log'),t=document.getElementById('t'),b=document.getElementById('b');
+let history=[];
+const esc=s=>s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const render=s=>esc(s).replace(/\*\*([^*\n]+)\*\*/g,'<b>$1</b>');
+function add(role,text){const d=document.createElement('div');d.className='m '+role;
+  role==='user'?d.textContent=text:d.innerHTML=render(text);log.appendChild(d);log.scrollTop=log.scrollHeight;return d}
+async function send(){
+  const text=t.value.trim();if(!text)return;t.value='';b.disabled=true;
+  add('user',text);history.push({role:'user',content:text});
+  const wait=add('assistant','…');
+  try{
+    const r=await fetch('/request',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({messages:history})});
+    let d=await r.json();
+    // A person must approve every reply: show "awaiting approval" and check back until it is decided.
+    for(let i=0;d.status==='awaiting_approval'&&d.id&&i<200;i++){
+      wait.textContent='⏳ '+d.message;
+      await new Promise(ok=>setTimeout(ok,3000));
+      d=await (await fetch('/request/'+d.id)).json();
+    }
+    if(d.reply){history.push({role:'assistant',content:d.reply});wait.innerHTML=render(d.reply)}
+    else{history.pop();wait.textContent=d.message||'Something went wrong.'}
+  }catch{history.pop();wait.textContent='Network error. Try again.'}
+  b.disabled=false;t.focus();log.scrollTop=log.scrollHeight}
+document.getElementById('f').addEventListener('submit',e=>{e.preventDefault();send()});
+t.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}});
+</script></body></html>

@@ -1,0 +1,25 @@
+name = "my-agent"
+main = "src/index.js"
+compatibility_date = "2025-01-01"
+
+[vars]
+MODEL_PROVIDER = "openrouter"   # "gemini", "anthropic" or "openrouter"
+MODEL = "google/gemma-4-31b-it:free,inclusionai/ling-3.2-flash:free,baidu/ernie-5.5-flash-preview:free,recursive/flint-v1.0:free"  # tried in order; if one fails the next is used
+REQUIRE_APPROVAL = "off"  # "on" = every reply waits in /inbox for a person to press Approve; "off" = replies go straight to the user
+
+# Price per million tokens, in USD. 0 on a free tier. Paid price of google/gemma-4-31b-it on OpenRouter: in 0.20, out 0.40 (checked 2026-11-21; look it up again before relying on it).
+PRICE_IN = "0"
+PRICE_OUT = "0"
+# Secret MODEL_API_KEY is NOT here: local -> .dev.vars, live -> wrangler secret put
+
+# Import .html and .md files as plain text
+[[rules]]
+type = "Text"
+globs = ["**/*.html", "**/*.md"]
+fallthrough = true
+
+# Approval inbox storage. Local dev uses a simulated KV automatically.
+# For the live version: npx wrangler kv namespace create ITEMS  -> paste the id below
+[[kv_namespaces]]
+binding = "ITEMS"
+# id = "<paste the id from the create command>"

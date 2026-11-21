@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Inbox</title>
+<style>
+:root{color-scheme:light dark}
+body{font:16px/1.5 system-ui,sans-serif;max-width:760px;margin:0 auto;padding:16px}
+.item{border:1px solid #8884;border-radius:12px;padding:12px 14px;margin:12px 0}
+.meta{font-size:13px;opacity:.7}.q{font-weight:600;margin:6px 0}
+.draft{white-space:pre-wrap;background:#8881;border-radius:8px;padding:8px}
+textarea{width:100%;min-height:90px;font:inherit}
+button{font:inherit;padding:6px 14px;border-radius:16px;border:1px solid #8886;background:transparent;color:inherit;cursor:pointer;margin:8px 6px 0 0}
+.ok{background:#2e7d32;color:#fff;border-color:#2e7d32}
+</style></head><body>
+<h1>Inbox</h1><div id="list">Loading…</div>
+<script>
+const list=document.getElementById('list');
+const post=(p,b)=>fetch(p,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b||{})});
+function card(it){
+  const d=document.createElement('div');d.className='item';
+  const meta=document.createElement('div');meta.className='meta';meta.textContent=it.created+' · '+it.kind+' · '+((it.usage&&(it.usage.input+it.usage.output))||0)+' tokens · $'+(it.cost||0).toFixed(6);
+  const q=document.createElement('div');q.className='q';q.textContent='Customer: '+it.message;
+  const draft=document.createElement('div');draft.className='draft';draft.textContent=it.draft;
+  const ta=document.createElement('textarea');ta.value=it.draft;ta.hidden=true;
+  const mk=(t,cls,fn)=>{const b=document.createElement('button');b.textContent=t;if(cls)b.className=cls;b.onclick=fn;return b};
+  const act=async(a,body)=>{await post('/inbox/'+it.id+'/'+a,body);load()};
+  const save=mk('Save edit','',async()=>{await post('/inbox/'+it.id+'/edit',{draft:ta.value});load()});save.hidden=true;
+  const edit=mk('Edit','',()=>{ta.hidden=false;save.hidden=false;draft.hidden=true;edit.hidden=true});
+  d.append(meta,q,draft,ta,mk('Approve','ok',()=>act('approve')),edit,save,mk('Cancel','',()=>act('cancel')));
+  return d}
+async function load(){
+  const r=await fetch('/inbox/items');const {items}=await r.json();
+  list.replaceChildren(...(items.length?items.map(card):['Nothing awaiting approval.']))}
+load();setInterval(()=>{if(!document.querySelector('textarea:not([hidden])'))load()},5000);
+</script></body></html>

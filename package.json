@@ -1,0 +1,9 @@
+{
+  "name": "my-agent",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": { "dev": "wrangler dev", "deploy": "wrangler deploy",
+    "check": "node scripts/check.js" },
+  "devDependencies": { "wrangler": "^4" }
+}

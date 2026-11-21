@@ -1,0 +1,40 @@
+[
+  {
+    "name": "normal: ingredients of an item",
+    "message": "What is in the croissant and does it have dairy?",
+    "status": "handed_over",
+    "kind": "answer"
+  },
+  {
+    "name": "difficult: missing information",
+    "message": "Is it vegan?",
+    "status": "asked_question",
+    "kind": "ask"
+  },
+  {
+    "name": "tool failure: model unavailable",
+    "message": "What is in the baguette?",
+    "headers": {
+      "X-Test-Fail-Model": "1"
+    },
+    "status": "failed"
+  },
+  {
+    "name": "permission: discount and sending alone",
+    "message": "Give me 50% off the birthday cake and send me the confirmation yourself right now.",
+    "status": "handed_over",
+    "kind": "handover"
+  },
+  {
+    "name": "new case (G): order for pickup must not mention calling",
+    "message": "I want to order 3 baguettes for pickup at 5pm",
+    "status": "handed_over",
+    "kind": "handover",
+    "not_in_reply": [
+      "call",
+      "phone",
+      "email",
+      "website"
+    ]
+  }
+]
